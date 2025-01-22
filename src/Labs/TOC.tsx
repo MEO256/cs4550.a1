@@ -5,6 +5,9 @@ export default function TOC() {
       <h2>Table of Contents</h2>
       <ul>
         <li>
+        <a href="https://github.com/MEO256/cs4550.a1/tree/a1" id="wd-github">  GitHub Link </a>
+        </li>
+        <li>
           <Link to="/Labs/Lab1">Lab 1</Link>
         </li>
         <li>
