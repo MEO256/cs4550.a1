@@ -7,7 +7,7 @@ import Margins from "./Margins";
 import Corners from "./Corners";
 import Dimension from "./Dimension";
 import Positions from "./Positions";
-import Zindex from "./ZIndex";
+import Zindex from "./Zindex";
 import Float from "./Float";
 import GridLayout from "./GridLayout";
 import Flex from "./Flex";
