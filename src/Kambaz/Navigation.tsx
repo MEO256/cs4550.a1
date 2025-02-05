@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { AiFillBuild, AiFillExperiment, AiOutlineDashboard } from "react-icons/ai";
-import { IoCalendarOutline } from "react-icons/io5";
-import { LiaBookSolid, LiaCalendar, LiaCogSolid, LiaInboxSolid } from "react-icons/lia";
-import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
+import {  AiFillExperiment, AiOutlineDashboard } from "react-icons/ai";
+import { LiaBookSolid, LiaCalendar, LiaInboxSolid } from "react-icons/lia";
+import {  FaRegCircleUser } from "react-icons/fa6";
 export default function KambazNavigation() {
   return (
     <div id="wd-kambaz-navigation" style={{ width: 120 }} 
