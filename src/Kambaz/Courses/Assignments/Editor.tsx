@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Link, useParams } from 'react-router';
+import * as db from '../../Database';
+
 
 export default function AssignmentEditor() {
+  const { cid } = useParams();
+  const assignment = db.assignments.find((assignment) => assignment._id === cid);
   const [submissionType, setSubmissionType] = useState("Online");
 
   // Handle change for Submission Type
@@ -15,7 +20,7 @@ export default function AssignmentEditor() {
       <Form>
         <Form.Group controlId="wd-name">
           <Form.Label>Assignment Name</Form.Label>
-          <Form.Control type="text" defaultValue="A1 - ENV + HTML" />
+          <Form.Control type="text" defaultValue={assignment?.title} />
         </Form.Group>
 
         <Form.Group controlId="wd-description" className="mt-3">
@@ -113,8 +118,12 @@ export default function AssignmentEditor() {
 
         <Row className="mt-4">
           <Col sm={6} className="text-end">
-            <Button variant="secondary" className="me-2">Cancel</Button>
-            <Button variant="danger">Save</Button>
+          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+              <Button variant="secondary" className="me-2">Cancel</Button>
+            </Link>
+            <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+              <Button variant="danger">Save</Button>
+            </Link>
           </Col>
         </Row>
       </Form>

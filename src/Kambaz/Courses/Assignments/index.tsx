@@ -1,11 +1,15 @@
 import { ListGroup, Button, Form, InputGroup } from "react-bootstrap";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import LessonControlButtons from "../Modules/LessonControlButtons"; // Import LessonControlButtons
+import { Link, useParams } from "react-router-dom";
+import LessonControlButtons from "../Modules/LessonControlButtons";
 import { LiaBookSolid } from "react-icons/lia";
+import * as db from "../../Database";
 
 export default function Assignments() {
+  const { cid } = useParams();
+  const assignments = db.assignments;
+
   return (
     <div className="p-4">
       {/* Search Bar */}
@@ -42,35 +46,21 @@ export default function Assignments() {
 
         {/* Assignment List */}
         <ListGroup className="rounded-0">
-          {[
-            {
-              id: 123,
-              title: "A1 - ENV + HTML",
-              details: "Multiple Modules | Not available until May 6 at 12:00am | Due May 13 at 11:59pm | 100 pts",
-            },
-            {
-              id: 1337,
-              title: "A2 - CSS + BOOTSTRAP",
-              details: "Multiple Modules | Not available until May 13 at 12:00am | Due May 20 at 11:59pm | 100 pts",
-            },
-            {
-              id: 228,
-              title: "A3 - JAVASCRIPT + REACT",
-              details: "Multiple Modules | Not available until May 20 at 12:00am | Due May 27 at 11:59pm | 100 pts",
-            },
-          ].map((assignment) => (
-            <ListGroup.Item key={assignment.id} className="wd-lesson p-3 ps-1">
+        {assignments
+          .filter((assignment: any) => assignment.course === cid)
+          .map((assignment: any) => (
+            <ListGroup.Item key={assignment._id} className="wd-lesson p-3 ps-1">
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <BsGripVertical className="me-2 fs-3" />
                   <LiaBookSolid className="fs-1 text-success"></LiaBookSolid>
-                  <Link to={`/Kambaz/Courses/1234/Assignments/${assignment.id}`} className="fw-bold text-primary text-decoration-none">
+                  <Link to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="fw-bold text-primary text-decoration-none">
                     {assignment.title}
                   </Link>
                 </div>
                 <LessonControlButtons />
               </div>
-              <div className="text-muted">{assignment.details}</div>
+              <div>{assignment.course}</div>
             </ListGroup.Item>
           ))}
         </ListGroup>
