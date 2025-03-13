@@ -1,19 +1,14 @@
-import { Button, FormControl, InputGroup, Modal } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import { Button, FormControl, InputGroup } from "react-bootstrap";
+import { FaSearch, FaPlus } from "react-icons/fa";
 import { BsPlus } from "react-icons/bs";
-import { addAssignment } from "./reducer";
 import { useState } from "react";
-
-export default function AssignmentsControls({
-  isFaculty,
-}: {
-  isFaculty: boolean;
-}) {
-  const [moduleName, setModuleName] = useState("");
+import AssignmentEditor from "./AssignmentEditor";
+export default function AssignmentsControls(
+  { moduleName, setModuleName, isFaculty }:
+  { moduleName: string; setModuleName: (title: string) => void; addModule: () => void; isFaculty: boolean; }) {
   const [show, setShow] = useState(false);
-
   const handleClose = () => setShow(false);
-
+  const handleShow = () => setShow(true);
   return (
     <div
       id="wd-assignments-controls"
@@ -41,29 +36,21 @@ export default function AssignmentsControls({
           </Button>
 
           <Button
+            onClick={handleShow}
             variant="danger"
-            className="d-flex align-items-center px-3"
-            id="wd-add-assignment"
+            size="lg"
+            className="me-1 float-end"
           >
-            <BsPlus className="position-relative me-2" /> Assignment
+            <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
+            Assignment{" "}
           </Button>
-          <Modal show={show} onHide={handleClose}>
-   <Modal.Header closeButton>
-    <Modal.Title>NEW</Modal.Title>
-   </Modal.Header>
-   <Modal.Body>
-    <FormControl value={moduleName}
-     onChange={(e) => { setModuleName(e.target.value); }} />
-   </Modal.Body>
-   <Modal.Footer>
-    <Button variant="secondary" onClick={handleClose}> Cancel </Button>
-    <Button variant="primary"
-     onClick={() => {
-        addAssignment({ moduleName });
-      handleClose();
-     }} > Add Assignment </Button>
-   </Modal.Footer>
-  </Modal>
+          <AssignmentEditor
+            show={show}
+            handleClose={handleClose}
+            dialogTitle="Add Assignment"
+            moduleName={moduleName}
+            setModuleName={setModuleName}
+          />
         </div>
       )}
     </div>

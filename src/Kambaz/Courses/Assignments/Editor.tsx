@@ -1,171 +1,132 @@
-import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link, useParams } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
-import { addAssignment, updateAssignment } from "./reducer";
-import { useState } from "react";
-export default function AssignmentEditor() {
-  const { cid, aid } = useParams();
-  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
-  const dispatch = useDispatch();
+import { useState } from 'react';
+import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Link, useParams } from 'react-router';
+import * as db from '../../Database';
 
-  const isNew = aid === "new";
-  const existingAssignment = assignments.find(
-    (assignment: any) => assignment.course === cid && assignment._id === aid
-  );
-  const [assignment, setAssignment] = useState(
-    isNew
-      ? {
-          title: "",
-          course: cid,
-          modules: "",
-          available_from_date: new Date().toISOString(),
-          available_until_date: new Date(
-            new Date().setDate(new Date().getDate() + 14)
-          ).toISOString(),
-          points: 100,
-        }
-      : existingAssignment || {}
-  );
-  const handleSave = () => {
-    if (isNew) {
-      dispatch(addAssignment(assignment));
-    } else {
-      dispatch(updateAssignment(assignment));
-    }
+
+export default function AssignmentEditor() {
+  const { cid } = useParams();
+  const assignment = db.assignments.find((assignment) => assignment._id === cid);
+  const [submissionType, setSubmissionType] = useState("Online");
+
+  // Handle change for Submission Type
+  const handleSubmissionTypeChange = (event: React.ChangeEvent<HTMLElement>) => {
+    const { value } = event.target as HTMLSelectElement;  // Type casting to HTMLSelectElement
+    setSubmissionType(value);
   };
-  const formatDateForInput = (isoString: string | undefined) => {
-    if (!isoString) return "";
-    return new Date(isoString).toISOString().slice(0, 16);
-  };
-  const handleDateChange = (field: string, value: string) => {
-    setAssignment({ ...assignment, [field]: new Date(value).toISOString() });
-  };
+
   return (
-    <div id="wd-assignments-editor" className="p-4">
-      <Form.Group className="mb-3" controlId="wd-name">
-        <Form.Label>Assignment Name</Form.Label>
-        <Form.Control
-          value={assignment.title}
-          onChange={(e) =>
-            setAssignment({ ...assignment, title: e.target.value })
-          }
-          placeholder="Enter assignment name"
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-description">
-        <Form.Control
-          as="textarea"
-          rows={5}
-          value={assignment.description}
-          onChange={(e) =>
-            setAssignment({ ...assignment, description: e.target.value })
-          }
-          placeholder="Enter assignment description"
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-points">
-        <Form.Label>Points</Form.Label>
-        <Form.Control
-          type="number"
-          value={assignment.points}
-          onChange={(e) =>
-            setAssignment({ ...assignment, points: Number(e.target.value) })
-          }
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-group">
-        <Form.Label>Assignment Group</Form.Label>
-        <Form.Select defaultValue="ASSIGNMENTS">
-          <option value="ASSIGNMENTS">ASSIGNMENTS</option>
-          <option value="QUIZZES">QUIZZES</option>
-          <option value="EXAMS">EXAMS</option>
-          <option value="PROJECTS">PROJECTS</option>
-        </Form.Select>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-display-grade-as">
-        <Form.Label>Display Grade as</Form.Label>
-        <Form.Select defaultValue="Percentage">
-          <option value="percentage">Percentage</option>
-          <option value="points">Points</option>
-          <option value="complete/incomplete">Complete/Incomplete</option>
-        </Form.Select>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-submission-type">
-        <Form.Label>Submission Type</Form.Label>
-        <Form.Select defaultValue="Online">
-          <option value="online">Online</option>
-          <option value="paper">Paper</option>
-          <option value="none">None</option>
-        </Form.Select>
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Online Entry Options</Form.Label>
-        <Form.Check type="checkbox" id="wd-text-entry" label="Text Entry" />
-        <Form.Check
-          type="checkbox"
-          id="wd-website-url"
-          label="Website URL"
-          defaultChecked
-        />
-        <Form.Check
-          type="checkbox"
-          id="wd-media-recordings"
-          label="Media Recordings"
-        />
-        <Form.Check
-          type="checkbox"
-          id="wd-student-annotation"
-          label="Student Annotation"
-        />
-        <Form.Check type="checkbox" id="wd-file-upload" label="File Upload" />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="wd-assign-to">
-        <Form.Label>Assign to</Form.Label>
-        <Form.Control defaultValue="Everyone" />
-      </Form.Group>
-      <Row>
-        <Col>
-          <Form.Group className="mb-3" controlId="wd-available-from">
+    <div id="wd-assignments-editor">
+      <Form>
+        <Form.Group controlId="wd-name">
+          <Form.Label>Assignment Name</Form.Label>
+          <Form.Control type="text" defaultValue={assignment?.title} />
+        </Form.Group>
+
+        <Form.Group controlId="wd-description" className="mt-3">
+          <Form.Label>Description</Form.Label>
+          <Form.Control as="textarea" defaultValue="The assignment is available online Submit a link to the landing page of" />
+        </Form.Group>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Points</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control type="number" defaultValue={100} />
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Assignment Group</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control as="select" id="wd-group">
+              <option value="Assignments">Assignments</option>
+              <option value="Quizzes">Quizzes</option>
+              <option value="Exams">Exams</option>
+            </Form.Control>
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Display Grade as</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control as="select" id="wd-display-grade-as">
+              <option value="Percentage">Percentage</option>
+              <option value="Points">Points</option>
+            </Form.Control>
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Submission Type</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control as="select" id="wd-submission-type" value={submissionType} onChange={handleSubmissionTypeChange}>
+              <option value="Online">Online</option>
+              <option value="In person">In person</option>
+            </Form.Control>
+          </Col>
+        </Row>
+
+        {submissionType === "Online" && (
+          <Form.Group className="mt-3">
+            <Form.Label>Online Entry Options</Form.Label>
+            <div>
+              <Form.Check type="checkbox" label="Text Entry" id="wd-text-entry" />
+              <Form.Check type="checkbox" label="Website URL" id="wd-website-url" />
+              <Form.Check type="checkbox" label="Media Recordings" id="wd-media-recordings" />
+              <Form.Check type="checkbox" label="Student Annotation" id="wd-student-annotation" />
+              <Form.Check type="checkbox" label="File Uploads" id="wd-file-upload" />
+            </div>
+          </Form.Group>
+        )}
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Assign To</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control type="text" id="wd-assign-to" defaultValue="Everyone" />
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
+            <Form.Label>Due</Form.Label>
+          </Col>
+          <Col>
+            <Form.Control type="date" id="wd-due-date" defaultValue="2024-05-13" />
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col sm={3} className="text-end">
             <Form.Label>Available from</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              value={formatDateForInput(assignment.available_from_date)}
-              onChange={(e) =>
-                handleDateChange("available_from_date", e.target.value)
-              }
-            />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3" controlId="wd-available-until">
-            <Form.Label>Until</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              value={formatDateForInput(assignment.available_until_date)}
-              onChange={(e) =>
-                handleDateChange("available_until_date", e.target.value)
-              }
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-      <div className="d-flex justify-content-end">
-        <Link
-          to={`/Kambaz/Courses/${cid}/Assignments`}
-          className="wd-dashboard-course-link text-decoration-none text-dark"
-        >
-          <Button
-            variant="secondary"
-            className="me-2"
-            onClick={() => alert("Assignment Cancelled!")}
-          >
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleSave}>
-            Save
-          </Button>
-        </Link>
-      </div>
+          </Col>
+          <Col>
+            <Form.Control type="date" id="wd-available-from" defaultValue="2024-05-06" /> 
+            Until
+            <Form.Control type="date" id="wd-available-until" defaultValue="2024-05-28" />
+          </Col>
+        </Row>
+
+        <Row className="mt-4">
+          <Col sm={6} className="text-end">
+          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+              <Button variant="secondary" className="me-2">Cancel</Button>
+            </Link>
+            <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+              <Button variant="danger">Save</Button>
+            </Link>
+          </Col>
+        </Row>
+      </Form>
     </div>
   );
 }

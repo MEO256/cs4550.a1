@@ -1,12 +1,12 @@
 import AssignmentsControls from "./AssignmentsControls";
 import AssignmentControlButtons from "./AssignmentControlButtons";
-import AssignmentsControlButtons from "./AssignmentsControlButtons";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteAssignment } from "./reducer";
-import { ListGroup, Button, Form, InputGroup } from "react-bootstrap";
-import { BsGripVertical, BsPlus } from "react-icons/bs";
+import { addAssignment, deleteAssignment } from "./reducer";
+import { ListGroup, Form, InputGroup } from "react-bootstrap";
+import { BsGripVertical  } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
 import { LiaBookSolid } from "react-icons/lia";
 import * as db from "../../Database";
 
@@ -15,11 +15,24 @@ export default function Assignments() {
   const { cid } = useParams();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const [moduleName, setModuleName] = useState("");
   const isFaculty = currentUser.role === "FACULTY";
 
   return (
     <div className="p-4">
-       <AssignmentsControls isFaculty={isFaculty} />
+      <AssignmentsControls
+        moduleName={moduleName}
+        setModuleName={setModuleName}
+        addModule={() => {
+                  dispatch(
+                    addAssignment({
+                      name: moduleName
+                    })
+                  );
+                  setModuleName("");
+                }}
+                isFaculty={isFaculty} 
+      />
       {/* Search Bar */}
       <InputGroup className="mb-3 w-50">
         <InputGroup.Text>
@@ -36,10 +49,6 @@ export default function Assignments() {
               <BsGripVertical className="me-2 fs-3" />
               ASSIGNMENTS 40% of Total
             </div>
-            <AssignmentsControlButtons />
-            <Button variant="outline-secondary" size="sm">
-              <BsPlus />
-            </Button>
           </div>
         </ListGroup.Item>
 
