@@ -3,19 +3,12 @@ import GreenCheckmark from "./GreenCheckmark";
 import { Button, Dropdown } from "react-bootstrap";
 import { useState } from "react";
 import ModuleEditor from "./ModuleEditor";
-export default function ModulesControls({
-  setModuleName,
-  moduleName,
-  addModule,
-}: {
-  setModuleName: (name: string) => void;
-  moduleName: string;
-  addModule: () => void;
-}) {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+export default function ModulesControls(
+  { moduleName, setModuleName, addModule }:
+  { moduleName: string; setModuleName: (title: string) => void; addModule: () => void; }) {
+   const [show, setShow] = useState(false);
+   const handleClose = () => setShow(false);
+   const handleShow = () => setShow(true);
   return (
     <div id="wd-modules-controls" className="text-nowrap">
       <Button
