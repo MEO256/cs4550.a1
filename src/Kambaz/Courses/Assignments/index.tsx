@@ -1,22 +1,44 @@
 import AssignmentsControls from "./AssignmentsControls";
 import AssignmentControlButtons from "./AssignmentControlButtons";
 import { useSelector, useDispatch } from "react-redux";
-import { addAssignment, deleteAssignment } from "./reducer";
+import { setAssignmentCourse, setAssignments, addAssignment, deleteAssignment } from "./reducer";
 import { ListGroup, Form, InputGroup } from "react-bootstrap";
 import { BsGripVertical  } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LiaBookSolid } from "react-icons/lia";
-import * as db from "../../Database";
+import * as client from "./client";
 
 export default function Assignments() {
-  const assignments = db.assignments;
   const { cid } = useParams();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [moduleName, setModuleName] = useState("");
+  let { assignments } = useSelector((state: any) => state.assignmentsReducer);
   const isFaculty = currentUser.role === "FACULTY";
+  const removeAssignment = async (assignmentId: string) => {
+    await client.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+};
+
+  
+const fetchAssignments = async () => {
+    const modules = await client.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(modules));
+  };
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
+
+assignments = assignments.filter((assignment: any) => {
+    return assignment.course === cid;
+});
+
+useEffect(() => {
+    dispatch(setAssignmentCourse(cid));
+}, [])
 
   return (
     <div className="p-4">
@@ -69,7 +91,7 @@ export default function Assignments() {
                 <AssignmentControlButtons
                       assignmentId={assignment._id}
                       deleteAssignment={(assignmentId) => {
-                        dispatch(deleteAssignment(assignmentId));
+                        removeAssignment(assignmentId);
                       }}
                       isFaculty={isFaculty}
                     />

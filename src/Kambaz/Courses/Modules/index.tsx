@@ -3,29 +3,47 @@ import ModulesControls from "./ModulesControls";
 import { BsGripVertical } from "react-icons/bs";
 import LessonControlButtons from "./LessonControlButtons";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import ModuleControlButtons from "./ModuleControlButtons";
-import { addModule, editModule, updateModule, deleteModule } from "./reducer";
+import { addModule, editModule, setModules, updateModule, deleteModule } from "./reducer";
 import { useSelector, useDispatch } from "react-redux";
+import * as coursesClient from "../client";
+import * as modulesClient from "./client";
 
 export default function Modules() {
   const { cid } = useParams();
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
   const dispatch = useDispatch();
+  const removeModule = async (moduleId: string) => {
+    await modulesClient.deleteModule(moduleId);
+    dispatch(deleteModule(moduleId));
+  };
+  const saveModule = async (module: any) => {
+    await modulesClient.updateModule(module);
+    dispatch(updateModule(module));
+  };
+
+  const createModuleForCourse = async () => {
+    if (!cid) return;
+    const newModule = { name: moduleName, course: cid };
+    const module = await coursesClient.createModuleForCourse(cid, newModule);
+    dispatch(addModule(module));
+  };
+
+  const fetchModules = async () => {
+    const modules = await coursesClient.findModulesForCourse(cid as string);
+    dispatch(setModules(modules));
+  };
+  useEffect(() => {
+    fetchModules();
+  }, []);
+
 
   return (
     <div>
       <ModulesControls
-        addModule={() => {
-          dispatch(
-            addModule({
-              name: moduleName,
-              course: cid,
-            })
-          );
-          setModuleName("");
-        }}
+        addModule={createModuleForCourse}
         moduleName={moduleName}
         setModuleName={setModuleName}
       />
@@ -45,7 +63,7 @@ export default function Modules() {
                   }
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      dispatch(updateModule({ ...module, editing: false }));
+                      saveModule({ ...module, editing: false });
                     }
                   }}
                   value={module.name}
@@ -54,7 +72,7 @@ export default function Modules() {
 
               <ModuleControlButtons
                 moduleId={module._id}
-                deleteModule={(moduleId) => dispatch(deleteModule(moduleId))}
+                deleteModule={(moduleId) => removeModule(moduleId)}
                 editModule={(moduleId) => dispatch(editModule(moduleId))}
               />
             </div>
