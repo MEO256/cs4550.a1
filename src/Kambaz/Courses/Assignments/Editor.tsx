@@ -1,131 +1,246 @@
-import { useState } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
-import { Link, useParams } from 'react-router';
-import * as db from '../../Database';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
+import { Link, useParams } from "react-router";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAssignment } from "./reducer";
+import * as assignmentsClient from "./client";
 
 export default function AssignmentEditor() {
-  const { cid } = useParams();
-  const assignment = db.assignments.find((assignment) => assignment._id === cid);
-  const [submissionType, setSubmissionType] = useState("Online");
+  const dispatch = useDispatch();
+  const { aid, cid } = useParams<{ aid: string; cid: string }>();
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const [assignment, setAssignment] = useState<any>(
+    assignments.find((assignment: any) => assignment._id === aid) ?? {
+      _id: aid ?? "",
+      course: cid ?? "",
+      title: "New Assignment",
+      description: "New Assignment Description",
+      points: 100,
+      assignmentGroup: "assignments",
+      displayType: "percentage",
+      submissionType: "online",
+      assignTo: "everyone",
+      releaseDate: "",
+      dueDate: "",
+      untilDate: "",
+      isNew: true,
+    }
+  );
 
-  // Handle change for Submission Type
-  const handleSubmissionTypeChange = (event: React.ChangeEvent<HTMLElement>) => {
-    const { value } = event.target as HTMLSelectElement;  // Type casting to HTMLSelectElement
-    setSubmissionType(value);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setAssignment((prev: any) => ({ ...prev, [id]: value }));
   };
 
+  const handleSubmit = async () => {
+    if (assignment?.isNew) {
+      delete assignment.isNew;
+      await assignmentsClient.createAssignment();
+    } else {
+      await assignmentsClient.updateAssignment(assignment);
+    }
+    dispatch(updateAssignment(assignment));
+  }
+
   return (
-    <div id="wd-assignments-editor">
+    <div className="p-4 pt-0">
       <Form>
-        <Form.Group controlId="wd-name">
+        <Form.Group controlId="title">
           <Form.Label>Assignment Name</Form.Label>
-          <Form.Control type="text" defaultValue={assignment?.title} />
+          <Form.Control
+            type="text"
+            value={assignment.title}
+            onChange={handleChange}
+          />
         </Form.Group>
 
-        <Form.Group controlId="wd-description" className="mt-3">
-          <Form.Label>Description</Form.Label>
-          <Form.Control as="textarea" defaultValue="The assignment is available online Submit a link to the landing page of" />
+        <Form.Group controlId="description" className="mt-3">
+          <Form.Control
+            as="textarea"
+            value={assignment.description}
+            onChange={handleChange}
+          />
         </Form.Group>
 
         <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Points</Form.Label>
-          </Col>
-          <Col>
-            <Form.Control type="number" defaultValue={100} />
-          </Col>
-        </Row>
-
-        <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Assignment Group</Form.Label>
-          </Col>
-          <Col>
-            <Form.Control as="select" id="wd-group">
-              <option value="Assignments">Assignments</option>
-              <option value="Quizzes">Quizzes</option>
-              <option value="Exams">Exams</option>
-            </Form.Control>
-          </Col>
-        </Row>
-
-        <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Display Grade as</Form.Label>
-          </Col>
-          <Col>
-            <Form.Control as="select" id="wd-display-grade-as">
-              <option value="Percentage">Percentage</option>
-              <option value="Points">Points</option>
-            </Form.Control>
-          </Col>
-        </Row>
-
-        <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Submission Type</Form.Label>
-          </Col>
-          <Col>
-            <Form.Control as="select" id="wd-submission-type" value={submissionType} onChange={handleSubmissionTypeChange}>
-              <option value="Online">Online</option>
-              <option value="In person">In person</option>
-            </Form.Control>
-          </Col>
-        </Row>
-
-        {submissionType === "Online" && (
-          <Form.Group className="mt-3">
-            <Form.Label>Online Entry Options</Form.Label>
-            <div>
-              <Form.Check type="checkbox" label="Text Entry" id="wd-text-entry" />
-              <Form.Check type="checkbox" label="Website URL" id="wd-website-url" />
-              <Form.Check type="checkbox" label="Media Recordings" id="wd-media-recordings" />
-              <Form.Check type="checkbox" label="Student Annotation" id="wd-student-annotation" />
-              <Form.Check type="checkbox" label="File Uploads" id="wd-file-upload" />
+          <Col className="d-flex align-items-center">
+            <div className="d-flex justify-content-end flex-grow-1">
+              <Form.Label htmlFor="points" className="m-0">
+                Points
+              </Form.Label>
             </div>
-          </Form.Group>
-        )}
-
-        <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Assign To</Form.Label>
           </Col>
-          <Col>
-            <Form.Control type="text" id="wd-assign-to" defaultValue="Everyone" />
-          </Col>
-        </Row>
-
-        <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Due</Form.Label>
-          </Col>
-          <Col>
-            <Form.Control type="date" id="wd-due-date" defaultValue="2024-05-13" />
+          <Col sm={8}>
+            <Form.Group>
+              <Form.Control
+                id="points"
+                type="number"
+                value={assignment.points}
+                onChange={handleChange}
+              />
+            </Form.Group>
           </Col>
         </Row>
 
         <Row className="mt-3">
-          <Col sm={3} className="text-end">
-            <Form.Label>Available from</Form.Label>
+          <Col className="d-flex align-items-center">
+            <div className="d-flex justify-content-end flex-grow-1">
+              <Form.Label htmlFor="assignmentGroup" className="m-0">
+                Assignment Group
+              </Form.Label>
+            </div>
           </Col>
-          <Col>
-            <Form.Control type="date" id="wd-available-from" defaultValue="2024-05-06" /> 
-            Until
-            <Form.Control type="date" id="wd-available-until" defaultValue="2024-05-28" />
+          <Col sm={8}>
+            <Form.Group>
+              <Form.Select
+                id="assignmentGroup"
+                value={assignment.assignmentGroup}
+                onChange={handleChange}
+              >
+                <option value="assignments">Assignments</option>
+              </Form.Select>
+            </Form.Group>
           </Col>
         </Row>
 
-        <Row className="mt-4">
-          <Col sm={6} className="text-end">
+        <Row className="mt-3">
+          <Col className="d-flex align-items-center">
+            <div className="d-flex justify-content-end flex-grow-1">
+              <Form.Label htmlFor="displayType" className="m-0">
+                Display Grade as
+              </Form.Label>
+            </div>
+          </Col>
+          <Col sm={8}>
+            <Form.Group>
+              <Form.Select
+                id="displayType"
+                value={assignment.displayType}
+                onChange={handleChange}
+              >
+                <option value="percentage">Percentage</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col className="d-flex">
+            <div className="d-flex justify-content-end flex-grow-1">
+              <Form.Label htmlFor="submissionType" className="m-0">
+                Submission Type
+              </Form.Label>
+            </div>
+          </Col>
+          <Col sm={8}>
+            <Card className="p-3">
+              <Form.Select
+                id="submissionType"
+                value={assignment.submissionType}
+                onChange={handleChange}
+              >
+                <option value="online">Online</option>
+              </Form.Select>
+
+              <Form.Group className="mt-3 d-flex flex-column gap-2">
+                <Form.Label className="fw-bold">
+                  Online Entry Options
+                </Form.Label>
+                <Form.Check type="checkbox" label="Text Entry" />
+                <Form.Check
+                  type="checkbox"
+                  label="Website URL"
+                  defaultChecked
+                />
+                <Form.Check type="checkbox" label="Media Recordings" />
+                <Form.Check type="checkbox" label="Student Annotation" />
+                <Form.Check type="checkbox" label="File Uploads" />
+              </Form.Group>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col className="d-flex">
+            <div className="d-flex justify-content-end flex-grow-1">
+              <Form.Label className="m-0">Assign</Form.Label>
+            </div>
+          </Col>
+          <Col sm={8}>
+            <Card className="p-3">
+              <Form.Group controlId="assignTo">
+                <Form.Label className="fw-bold">Assign to</Form.Label>
+                <Form.Select
+                  value={assignment.assignTo}
+                  onChange={handleChange}
+                >
+                  <option value="everyone">Everyone</option>
+                </Form.Select>
+              </Form.Group>
+
+              <Form.Group controlId="dueDate" className="mt-3">
+                <Form.Label className="fw-bold">Due</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={
+                    assignment.dueDate
+                      ? new Date(assignment.dueDate).toISOString().slice(0, 16)
+                      : ""
+                  }
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Row className="mt-3">
+                <Col>
+                  <Form.Group controlId="releaseDate">
+                    <Form.Label className="fw-bold">Available from</Form.Label>
+                    <Form.Control
+                      type="datetime-local"
+                      value={
+                        assignment.releaseDate
+                          ? new Date(assignment.releaseDate)
+                              .toISOString()
+                              .slice(0, 16)
+                          : ""
+                      }
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group controlId="untilDate">
+                    <Form.Label className="fw-bold">Until</Form.Label>
+                    <Form.Control
+                      type="datetime-local"
+                      value={
+                        assignment.untilDate
+                          ? new Date(assignment.untilDate)
+                              .toISOString()
+                              .slice(0, 16)
+                          : ""
+                      }
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+
+        <div className="d-flex justify-content-end mt-4">
           <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-              <Button variant="secondary" className="me-2">Cancel</Button>
-            </Link>
-            <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-              <Button variant="danger">Save</Button>
-            </Link>
-          </Col>
-        </Row>
+            <Button variant="secondary" className="me-2">
+              Cancel
+            </Button>
+          </Link>
+          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+            <Button variant="danger" onClick={handleSubmit}>Save</Button>
+          </Link>
+        </div>
       </Form>
     </div>
   );

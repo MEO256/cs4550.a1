@@ -1,106 +1,86 @@
-import AssignmentsControls from "./AssignmentsControls";
 import AssignmentControlButtons from "./AssignmentControlButtons";
+import AssignmentHeader from "./AssignmentsControlButtons";
+import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
+import { BsGripVertical } from "react-icons/bs";
+import { LuNotebookPen } from "react-icons/lu";
+import { FaCaretDown, FaPlus, FaSearch } from "react-icons/fa";
+import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { setAssignmentCourse, setAssignments, addAssignment, deleteAssignment } from "./reducer";
-import { ListGroup, Form, InputGroup } from "react-bootstrap";
-import { BsGripVertical  } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
 import { useEffect, useState } from "react";
-import { LiaBookSolid } from "react-icons/lia";
-import * as client from "./client";
+import {
+  addAssignment,
+  updateAssignment,
+  deleteAssignment,
+  setAssignments,
+} from "./reducer";
+import { FaPencil } from "react-icons/fa6";
 
 export default function Assignments() {
-  const { cid } = useParams();
-  const dispatch = useDispatch();
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const [moduleName, setModuleName] = useState("");
-  let { assignments } = useSelector((state: any) => state.assignmentsReducer);
-  const isFaculty = currentUser.role === "FACULTY";
-  const removeAssignment = async (assignmentId: string) => {
-    await client.deleteAssignment(assignmentId);
-    dispatch(deleteAssignment(assignmentId));
-};
+    const { cid } = useParams();
+    const [, setShow] = useState(false);
+    const { assignments } = useSelector((state: any) => state.assignmentReducer);
+    const dispatch = useDispatch();
 
-  
-const fetchAssignments = async () => {
-    const modules = await client.findAssignmentsForCourse(cid as string);
-    dispatch(setAssignments(modules));
-  };
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
+    const fetchAssignments = async () => {
+      const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
+      dispatch(setAssignments(assignments));
+    };
 
+    const saveAssignment = async (assignment: any) => {
+      await assignmentsClient.updateAssignment(assignment);
+      dispatch(updateAssignment(assignment));
+    };
+    const addAssignmentHandler = async () => {
+      const newAssignment = await assignmentsClient.createAssignment();
+      dispatch(addAssignment(newAssignment));
+    };
 
-assignments = assignments.filter((assignment: any) => {
-    return assignment.course === cid;
-});
+    const removeAssignment = async (assignmentId: string) => {
+      await assignmentsClient.deleteAssignment(assignmentId);
+      dispatch(deleteAssignment(assignmentId));
+    };
 
-useEffect(() => {
-    dispatch(setAssignmentCourse(cid));
-}, [])
+    useEffect(() => {
+      fetchAssignments();
+    }, []);  
+    const handleClose = () => setShow(false);
 
-  return (
-    <div className="p-4">
-      <AssignmentsControls
-        moduleName={moduleName}
-        setModuleName={setModuleName}
-        addModule={() => {
-                  dispatch(
-                    addAssignment({
-                      name: moduleName
-                    })
-                  );
-                  setModuleName("");
-                }}
-                isFaculty={isFaculty} 
-      />
-      {/* Search Bar */}
-      <InputGroup className="mb-3 w-50">
-        <InputGroup.Text>
-          <FaSearch />
-        </InputGroup.Text>
-        <Form.Control placeholder="Search for Assignments" />
-      </InputGroup>
-
-      {/* Assignments Header */}
-      <ListGroup className="rounded-0" id="wd-assignments">
-        <ListGroup.Item className="p-3 fs-5 border-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <BsGripVertical className="me-2 fs-3" />
-              ASSIGNMENTS 40% of Total
-            </div>
-          </div>
-        </ListGroup.Item>
-
-        {/* Assignment List */}
-        <ListGroup className="rounded-0">
-        {assignments
-          .filter((assignment: any) => assignment.course === cid)
-          .map((assignment: any) => (
-            <ListGroup.Item key={assignment._id} className="wd-lesson p-3 ps-1">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <BsGripVertical className="me-2 fs-3" />
-                  <LiaBookSolid className="fs-1 text-success"></LiaBookSolid>
-                  <Link to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="fw-bold text-primary text-decoration-none">
-                    {assignment.title}
-                  </Link>
-                </div>
-                <AssignmentControlButtons
-                      assignmentId={assignment._id}
-                      deleteAssignment={(assignmentId) => {
-                        removeAssignment(assignmentId);
-                      }}
-                      isFaculty={isFaculty}
-                    />
-              </div>
-              <div>{assignment.course}</div>
-            </ListGroup.Item>
-          ))}
+    return (
+      <div id="wd-assignments">
+        <div id="wd-assignment-controls" className="text-nowrap d-flex align-items-center gap-4">
+            <InputGroup.Text style={{ width: "400px"}} className="rounded-0 border-grey">
+                <FaSearch className="me-2"/>
+                <Form.Control id="wd-assignment-search" placeholder="Search..."/>
+            </InputGroup.Text >
+            <Button variant="danger" className="flex-end" size="lg" onClick={() => {
+      addAssignmentHandler();
+      handleClose();
+     }}><FaPlus className="position-relative me-2" /> 
+                Assignment
+            </Button>
+        </div>
+        <br></br>
+        <ListGroup className="rounded-0" id="wd-assignment-grouping">
+          <ListGroup.Item className="wd-module p-0 mb-5 fs-5 border-gray">
+          <div className="wd-title p-3 ps-2 bg-secondary"> <BsGripVertical className="me-2 fs-3" /> <FaCaretDown /> ASSIGNMENTS <AssignmentHeader /> </div>
+            <ListGroup className="wd-assignments rounded-0 d-flex align-items-center">
+              {assignments
+                .map((assignment: any) => (
+                  <ListGroup.Item action href={`#/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="wd-assignment p-3 ps-1 d-flex align-items-center">
+                    <BsGripVertical className="me-2 fs-3" /> <LuNotebookPen style={{ color: "green" }}/> 
+                    <div className="flex-grow-1"><b>{assignment.title}</b> <p><span className="text-danger">Multiple Modules</span> | <b>Not available until</b> {assignment.available} | <b>Due</b> {assignment.due} | {assignment.points}pts</p></div>
+                    <FaPencil
+                                onClick={() => saveAssignment(assignment._id)}
+                                className="text-primary me-3"
+                              />
+                    <AssignmentControlButtons assignmentId={assignment._id} deleteAssignment={(assignmentId) => removeAssignment(assignmentId)} /> 
+                  </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </ListGroup.Item>
         </ListGroup>
-      </ListGroup>
-    </div>
-  );
-}
+      </div>
+  );}
+  

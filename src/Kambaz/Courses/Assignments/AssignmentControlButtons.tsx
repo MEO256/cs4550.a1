@@ -1,25 +1,23 @@
 import { IoEllipsisVertical } from "react-icons/io5";
+import GreenCheckmark from "../Modules/GreenCheckmark";
 import { FaTrash } from "react-icons/fa";
-import GreenCheckmark from "./GreenCheckmark";
-export default function AssignmentControlButtons({
-  assignmentId,
-  deleteAssignment,
-  isFaculty,
-}: {
-  assignmentId: string;
-  deleteAssignment: (assignmentId: string) => void;
-  isFaculty: boolean;
+
+export default function AssignmentControlButtons({ assignmentId, deleteAssignment }: {
+    assignmentId: string; 
+    deleteAssignment: (assignmentId: string) => void
 }) {
-  return (
-    <div className="float-end">
-      <GreenCheckmark />
-      {isFaculty && (
-        <FaTrash
-          onClick={() => deleteAssignment(assignmentId)}
-          className="text-danger me-3"
-        />
-      )}
-      <IoEllipsisVertical className="fs-4" />
-    </div>
-  );
-}
+    return (
+        <div className="float-end">
+            <GreenCheckmark />
+            <IoEllipsisVertical className="fs-4" />
+            <FaTrash className="text-danger me-2 mb-1" onClick={(e) => {
+                e.preventDefault();
+                const check = window.confirm(
+                    "Are you sure you want to delete this assignment?"
+                );
+                if (check) {
+                    deleteAssignment(assignmentId);
+                }
+            }}/>
+        </div>
+    );}

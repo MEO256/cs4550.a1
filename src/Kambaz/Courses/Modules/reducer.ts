@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 const initialState = {
   modules: [],
 };
@@ -6,13 +8,13 @@ const modulesSlice = createSlice({
   name: "modules",
   initialState,
   reducers: {
-    setModules: (state, action) => {
-      state.modules = action.payload;
+    setModules: (state, { payload: modules }) => {
+      state.modules = modules;
     },
-
+  
     addModule: (state, { payload: module }) => {
       const newModule: any = {
-        _id: new Date().getTime().toString(),
+        _id: uuidv4(),
         lessons: [],
         name: module.name,
         course: module.course,
@@ -22,7 +24,6 @@ const modulesSlice = createSlice({
     deleteModule: (state, { payload: moduleId }) => {
       state.modules = state.modules.filter((m: any) => m._id !== moduleId);
     },
-
     updateModule: (state, { payload: module }) => {
       state.modules = state.modules.map((m: any) =>
         m._id === module._id ? module : m
@@ -33,9 +34,9 @@ const modulesSlice = createSlice({
         m._id === moduleId ? { ...m, editing: true } : m
       ) as any;
     },
+    
   },
 });
-
-export const { setModules, addModule, deleteModule, updateModule, editModule } =
+export const { addModule, deleteModule, updateModule, editModule, setModules } =
   modulesSlice.actions;
 export default modulesSlice.reducer;
