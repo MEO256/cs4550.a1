@@ -44,6 +44,12 @@ export const findAssignmentsForCourse = async (courseId: string) => {
   return response.data;
 }
 
+export const findQuizzesForCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials
+    .get(`${COURSES_API}/${courseId}/quizzes`);
+  console.log(response.data);
+  return response.data;
+}
 export const findUsersForCourse = async (courseId: string) => {
   const response = await axiosWithCredentials
     .get(`${COURSES_API}/${courseId}/users`);
