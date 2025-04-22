@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
+import { Button, Form, InputGroup, ListGroup, Table } from "react-bootstrap";
 import { BsGripVertical } from "react-icons/bs";
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaPlus, FaSearch, FaUserCircle } from "react-icons/fa";
 import { FaCaretDown, FaPencil } from "react-icons/fa6";
 import { LuNotebookPen } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import QuizControlButtons from "./QuizControlButtons";
 import * as quizClient from "./client";
 import * as coursesClient from "../client";
 import { addQuizzes, deleteQuizzes, setQuizzes, updateQuizzes } from "./reducer";
 import QuizControl from "./QuizControl";
+import { editAssignment } from "../Assignments/reducer";
+import { IoEllipsisVertical } from "react-icons/io5";
 
 
 export default function Quizzes() {
@@ -65,13 +67,16 @@ export default function Quizzes() {
             <ListGroup className="wd-assignments rounded-0 d-flex align-items-center">
               {quizzes
                 .map((quiz: any) => (
-                  <ListGroup.Item action href={`#/Kambaz/Courses/${cid}/Quizzes/${quiz._id}`} className="wd-assignment p-3 ps-1 d-flex align-items-center">
+                  <ListGroup.Item className="wd-assignment p-3 ps-1 d-flex align-items-center">
                     <BsGripVertical className="me-2 fs-3" /> <LuNotebookPen style={{ color: "green" }}/> 
                     <div className="flex-grow-1"><b>{quiz.title}</b> <p><span className="text-danger">Multiple Modules</span> | <b>Not available until</b> {quiz.available} | <b>Due</b> {quiz.due} | {quiz.points}pts</p></div>
                     <FaPencil
                                 onClick={() => saveAssignment(quiz._id)}
                                 className="text-primary me-3"
                               />
+                    <Link to={`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}`} className="text-decoration-none">
+                    <IoEllipsisVertical className="fs-4" />
+                    </Link>
                     <QuizControl assignmentId={quiz._id} deleteAssignment={(quizId: string) => removeAssignment(quizId)} />
                   </ListGroup.Item>
               ))}
