@@ -20,6 +20,8 @@ export default function Quizzes() {
     const [, setShow] = useState(false);
     const { quizzes } = useSelector((state: any) => state.quizzesReducer);
     const dispatch = useDispatch();
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    
 
     const fetchAssignments = async () => {
           const assignments = await coursesClient.findQuizzesForCourse(cid as string);
@@ -70,14 +72,17 @@ export default function Quizzes() {
                   <ListGroup.Item className="wd-assignment p-3 ps-1 d-flex align-items-center">
                     <BsGripVertical className="me-2 fs-3" /> <LuNotebookPen style={{ color: "green" }}/> 
                     <div className="flex-grow-1"><b>{quiz.title}</b> <p><span className="text-danger">Multiple Modules</span> | <b>Not available until</b> {quiz.available} | <b>Due</b> {quiz.due} | {quiz.points}pts</p></div>
+                    <Link to={`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}`} className="text-decoration-none">
+                    <IoEllipsisVertical className="fs-4" />
+                    </Link>
+                    {(currentUser.role == "ADMIN" || currentUser.role == "FACULTY") && 
+                    (<>
                     <FaPencil
                                 onClick={() => saveAssignment(quiz._id)}
                                 className="text-primary me-3"
                               />
-                    <Link to={`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}`} className="text-decoration-none">
-                    <IoEllipsisVertical className="fs-4" />
-                    </Link>
-                    <QuizControl assignmentId={quiz._id} deleteAssignment={(quizId: string) => removeAssignment(quizId)} />
+                      <QuizControl assignmentId={quiz._id} deleteAssignment={(quizId: string) => removeAssignment(quizId)} />
+                    </>)}
                   </ListGroup.Item>
               ))}
             </ListGroup>

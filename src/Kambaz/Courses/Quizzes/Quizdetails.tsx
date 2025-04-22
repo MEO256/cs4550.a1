@@ -7,36 +7,28 @@ import { Table } from "react-bootstrap";
 
 
 export default function QuizDetails() {
-    const { uid } = useParams();
+    const { qid, cid } = useParams();
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const [quizzes, setQuiz] = useState<any>({});
+    const [quizzes, setQuiz] = useState<any>([]);
+    
    
         const fetchUser = async () => {
-            if (!uid) return;
-            const user = await client.fetchAssigmentById(uid);
-            setQuiz(user);
+            if (!qid) return;
+            if (!cid) return;
+            const quiz = await client.fetchAssignmentById(cid, qid);
+            console.log("quizzes", quiz);
+            setQuiz(quiz);
         };
     
         useEffect(() => {
-            if (uid) fetchUser();
-        }, [uid]);
+            if (qid) fetchUser();
+        }, [qid]);
     
-        if (!uid) return null;
+        if (!qid) return null;
     
 
     return (
-        <Table striped>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Login ID</th>
-            <th>Section</th>
-            <th>Role</th>
-            <th>Last Activity</th>
-            <th>Total Activity</th>
-          </tr>
-        </thead>
         <tbody>
           {quizzes
             .map((user: any) => (
@@ -44,7 +36,7 @@ export default function QuizDetails() {
                 <td className="wd-full-name text-nowrap">
                   <Link to={`/Kambaz/Account/Users/${user._id}`} className="text-decoration-none">
                     <FaUserCircle className="me-2 fs-1 text-secondary" />
-                    <span className="wd-first-name">{user.firstName}</span>
+                    <span className="wd-first-name">{user.webcam}</span>
                     <span className="wd-last-name">{user.lastName}</span>
                   </Link>
                 </td>
@@ -56,6 +48,5 @@ export default function QuizDetails() {
               </tr>
             ))}
         </tbody>
-      </Table>
         );
     }
