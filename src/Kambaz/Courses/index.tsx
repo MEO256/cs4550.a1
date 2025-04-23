@@ -14,7 +14,7 @@ import Quizzes from "./Quizzes";
 import QuizDetails from "./Quizzes/QuizDetails";
 import QuizStudent from "./Quizzes/StudentView";
 import Editor from "./Quizzes/Editor";
-import QuizPreview from "./Quizzes/QuizPreview";
+//import QuizPreview from "./Quizzes/QuizPreview";
 
 export default function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
