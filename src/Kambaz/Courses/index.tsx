@@ -11,10 +11,11 @@ import { useSelector } from "react-redux";
 import * as courseClient from "./client";
 import * as enrollmentsClient from "../client";
 import Quizzes from "./Quizzes";
-import QuizDetails from "./Quizzes/QuizDetails";
 import QuizStudent from "./Quizzes/StudentView";
 import Editor from "./Quizzes/Editor";
-//import QuizPreview from "./Quizzes/QuizPreview";
+import QuizPreview from "./Quizzes/QuizPreview";
+import QuizDetails from "./Quizzes/QuizDetails";
+
 
 export default function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
