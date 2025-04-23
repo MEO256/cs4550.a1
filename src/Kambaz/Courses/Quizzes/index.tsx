@@ -37,8 +37,6 @@ export default function Quizzes() {
     fetchQuizzes();
   }, [currentUser.role]);
   
-  if (quizzes.length == 0)
-    return <div>Loading...</div>;
   return (
     <div id="wd-quizzes">
       <QuizzesControls userRole={currentUser.role} />

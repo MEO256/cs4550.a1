@@ -69,7 +69,7 @@ export default function Editor() {
           { ...quiz, published: published },
           questionSet
         );
-        navigate(`/Kanbas/Courses/${cid}/Quizzes/${data.createdQuiz._id}`);
+        navigate(`/Kambaz/Courses/${cid}/Quizzes/${data.createdQuiz._id}`);
       } else {
         await client.updateQuizAndQuestion(
           qid,
@@ -78,8 +78,8 @@ export default function Editor() {
         );
         navigate(
           published
-            ? `/Kanbas/Courses/${cid}/Quizzes/`
-            : `/Kanbas/Courses/${cid}/Quizzes/${qid}`
+            ? `/Kambaz/Courses/${cid}/Quizzes/`
+            : `/Kambaz/Courses/${cid}/Quizzes/${qid}`
         );
       }
     }
@@ -156,7 +156,7 @@ export default function Editor() {
           Save & Publish
         </button>
         <Link
-          to={`/Kanbas/Courses/${cid}/Quizzes`}
+          to={`/Kambaz/Courses/${cid}/Quizzes`}
           className="btn btn-secondary ms-2 mb-4 float-end"
         >
           Cancel
