@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Answers, Questions, Quiz, ShowAnswerType } from "../interface";
 import * as client from "../client";
-import {
-  formatDate,
-  formatTime,
-  getHighestScore,
-  MAX_DATE_TIME,
-  MIN_DATE_TIME,
-} from "../../../util";
-import { useAuth } from "../../../Authentication/AuthProvider";
 import QuizStudentControls from "./QuizStudentControls";
 import StudentAnswerView from "./StudentAnswerView";
 import { Link } from "react-router-dom";
@@ -18,8 +10,9 @@ export default function QuizStudent() {
   const [questions, setQuestions] = useState<Questions>();
   const [answers, setAnswers] = useState<Answers[]>();
   const [quiz, setQuiz] = useState<Quiz>();
-  const { cid, qid } = useParams();
-  const auth = useAuth();
+  const { qid } = useParams();
+  const { currentUser } = useSelector((state: any) => state.accountReducer); 
+
 
   const fetchQuiz = async () => {
     const data = qid ? await client.getQuizById(qid) : {};
@@ -31,7 +24,7 @@ export default function QuizStudent() {
   };
 
   const fetchAnswers = async () => {
-    const answers = qid ? await client.getAnswersByUser(qid, auth.token) : [];
+    const answers = qid ? await client.getAnswersByUser(qid, currentUser._id) : [];
     if (answers) {
       answers.sort(
         (a: Answers, b: Answers) =>
@@ -49,11 +42,11 @@ export default function QuizStudent() {
 
   const questionSet = questions?.questions;
   const availableTime = new Date(
-    quiz?.availableDate === "" ? MIN_DATE_TIME : (quiz?.availableDate as string)
+    quiz?.availableDate === "" ? "" : (quiz?.availableDate as string)
   );
   const untilTime = new Date(
     quiz?.availableUntilDate === ""
-      ? MAX_DATE_TIME
+      ? "FEBRUARY 451233"
       : (quiz?.availableUntilDate as string)
   );
   const dueDateTime = new Date(quiz?.dueDate as string);
@@ -72,7 +65,7 @@ export default function QuizStudent() {
             ) : (
               <>
                 <span className="fw-bold">Due</span>{" "}
-                {formatDate(quiz?.dueDate as string)}
+                {quiz?.dueDate ?? "No Due Date"}
               </>
             )}
           </li>
@@ -85,8 +78,8 @@ export default function QuizStudent() {
           <li className="d-inline-block me-5 mb-2">
             {quiz?.availableDate !== "" && quiz?.availableUntilDate !== "" && (
               <>
-                <b>Available</b> {formatDate(quiz?.availableDate as string)} -{" "}
-                {formatDate(quiz?.availableUntilDate as string)}
+                <b>Available</b> {quiz?.availableDate as string} -{" "}
+                {quiz?.availableUntilDate as string}
               </>
             )}
           </li>
@@ -144,7 +137,7 @@ export default function QuizStudent() {
               <tbody>
                 <tr>
                   <th>Time:</th>
-                  <td>{formatTime(answers[0].time_used)}</td>
+                  <td>{answers[0].time_used}</td>
                 </tr>
                 <tr>
                   <th>Current Score:</th>
@@ -152,7 +145,7 @@ export default function QuizStudent() {
                 </tr>
                 <tr>
                   <th>Kept Score:</th>
-                  <td>{`${getHighestScore(answers)} out of ${
+                  <td>{`${answers} out of ${
                     answers[0].total
                   }`}</td>
                 </tr>

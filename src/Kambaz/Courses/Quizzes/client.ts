@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Questions, QuestionType, Quiz } from "./interface";
+import { Questions, Quiz } from "./interface";
 
 const REMOTE_SERVER =
 import.meta.env.VITE_REMOTE_SERVER || "http://localhost:4000";

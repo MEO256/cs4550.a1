@@ -1,7 +1,5 @@
-import React from "react";
 import { Quiz } from "../interface";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../../util";
 
 export default function QuizStudentControls({
   availableTime,
@@ -42,13 +40,13 @@ export default function QuizStudentControls({
   } else if (availableTime > currentTime) {
     return (
       <div className="my-4">
-        This quiz is locked until {formatDate(quiz?.availableDate as string)}.
+        This quiz is locked until {quiz?.availableDate as string}.
       </div>
     );
   } else {
     return (
       <div>
-        This quiz was locked {formatDate(quiz?.availableUntilDate as string)}.
+        This quiz was locked {quiz?.availableUntilDate as string}.
       </div>
     );
   }

@@ -136,7 +136,7 @@ export default function EditDetails({
           <div>Options</div>
         </div>
         <div className="col-7">
-          <ul className="list-group list-group-item wd-kanbas-edit-section">
+          <ul className="list-group list-group-item wd-kambaz-edit-section">
             <li className="list-group-item border-0">
               <input
                 type="checkbox"
@@ -325,7 +325,7 @@ export default function EditDetails({
           <div>Assign</div>
         </div>
         <div className="col-7">
-          <ul className="list-group list-group-item wd-kanbas-edit-section">
+          <ul className="list-group list-group-item wd-kambaz-edit-section">
             <li className="list-group-item border-0">
               <b>Assin to</b>
             </li>
@@ -350,10 +350,10 @@ export default function EditDetails({
             <li className="list-group-item border-0">
               <div className="row">
                 <div className="col-6 text-start">
-                  <b className="wd-kanbas-width-45">Available from</b>
+                  <b className="wd-kambaz-width-45">Available from</b>
                 </div>
                 <div className="col-6 text-start">
-                  <b className="wd-kanbas-width-45">Until</b>
+                  <b className="wd-kambaz-width-45">Until</b>
                 </div>
               </div>
             </li>

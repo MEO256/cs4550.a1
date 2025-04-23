@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getQuizById } from "./client";
@@ -7,24 +7,21 @@ import { FaPencil } from "react-icons/fa6";
 import * as client from "./client";
 import AnswerHistory from "./StudentView/AnswerHistory";
 import {
-  Quiz,
   Question,
-  Answer,
-  Choice,
-  QuestionType,
   Answers,
 } from "./interface";
-import { useAuth, useUserRole } from "../../Authentication/AuthProvider";
 
 export default function QuizDetails() {
   const navigate = useNavigate();
   const { cid, qid } = useParams();
-  const auth = useAuth();
-  const userId = auth.token;
-  const role = useUserRole();
   const dispatch = useDispatch();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answer, setAnswer] = useState<Answers>();
+  const { currentUser } = useSelector((state: any) => state.accountReducer); 
+  const userId = currentUser._id;
+  const role = currentUser.role;
+
+
 
   const quiz = useSelector((state: any) =>
     state.quizzesReducer.quizzes.find((q: any) => q._id === qid)
@@ -65,7 +62,7 @@ export default function QuizDetails() {
       console.error("Quiz ID or User ID is undefined");
       return;
     }
-    navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/preview`);
+    navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/preview`);
   };
 
   useEffect(() => {

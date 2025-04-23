@@ -1,5 +1,4 @@
-import React from "react";
-import { Answer, Answers, Question, QuestionType } from "../interface";
+import { Answer, Question, QuestionType } from "../interface";
 import "./index.css";
 import AnswerLabel from "./AnswerLabel";
 

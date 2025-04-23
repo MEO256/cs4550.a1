@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Questions, Quiz, ShowAnswerType } from "../interface";
 import { useNavigate, useParams } from "react-router";
 import * as client from "../client";

@@ -1,7 +1,6 @@
 import { FaPlus } from "react-icons/fa6";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { Link, useParams } from "react-router-dom";
-import { useUserRole } from "../../Authentication/AuthProvider";
 
 export default function QuizzesControls({ userRole }: { userRole: string }) {
   const { cid } = useParams();
@@ -21,7 +20,7 @@ export default function QuizzesControls({ userRole }: { userRole: string }) {
           {userRole === "FACULTY" && (
             <>
               <Link
-                to={`/Kanbas/Courses/${cid}/Quizzes/new/edit`}
+                to={`/Kambaz/Courses/${cid}/Quizzes/new/edit`}
                 id="wd-add-quizzes-btn"
                 className="btn btn-lg btn-danger me-2 d-flex align-items-center"
                 style={{ height: "40px" }}

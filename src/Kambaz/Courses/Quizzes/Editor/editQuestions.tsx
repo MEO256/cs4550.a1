@@ -1,10 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { addQuiz, setQuiz, updateQuiz } from "../reducer";
-import * as client from "../client";
-import { FaBan, FaPlus } from "react-icons/fa";
-import { IoEllipsisVertical } from "react-icons/io5";
-import { Link, NavLink } from "react-router-dom";
+import {  FaPlus } from "react-icons/fa";
 import { Questions, Question, QuestionType } from "../interface";
 import { JSX, useEffect, useState } from "react";
 import QuestionForm from "../Questions/questionForm";

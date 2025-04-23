@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Quiz,
   Question,
   Answer,
   Choice,
   QuestionType,
-  Answers,
 } from "./interface";
 import * as client from "./client";
-import { useAuth, useUserRole } from "../../Authentication/AuthProvider";
 import { CgDanger } from "react-icons/cg";
 import { RiPencilLine } from "react-icons/ri";
 import { FaCaretLeft, FaCaretRight, FaCheck } from "react-icons/fa6";
 import { LiaQuestionCircle } from "react-icons/lia";
-import { formatDate, formatTime } from "../../util";
+import { useSelector } from "react-redux";
 
 export default function QuizPreview() {
   const { cid, qid } = useParams();
-  const auth = useAuth();
-  const userId = auth.token;
-  const role = useUserRole();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -31,13 +26,16 @@ export default function QuizPreview() {
   const [startTime, setStartTime] = useState<string>("");
   const [isHidden, setIsHidden] = useState(false);
   const [allAnswered, setAllAnswered] = useState(false);
+  const { currentUser } = useSelector((state: any) => state.accountReducer); 
+  const userId = currentUser._id;
+  const role = currentUser.role;
 
   const toggleVisibility = () => {
     setIsHidden(!isHidden);
   };
 
   const now = new Date();
-  const formattedTime = formatDate(now.toISOString());
+  const formattedTime = now.toISOString();
 
   const isQuestionAnswered = (answer: Answer) => {
     if (!answer || !answer.type) {
@@ -184,8 +182,7 @@ export default function QuizPreview() {
       } else {
         await client.saveQuizAnswers(answerId, answerSet);
       }
-      // console.log('Quiz submitted');
-      navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}`);
+      navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}`);
     } catch (error) {
       console.error("Error submitting quiz:", error);
     }
@@ -371,7 +368,7 @@ export default function QuizPreview() {
           <div className="question-list-group mt-5">
             <h4>Questions</h4>
             <ul className=" mt-3">
-              {questions.map((q: Question, index: number) => (
+              {questions.map((_q: Question, index: number) => (
                 <li
                   className={`list-group-item ${
                     currentQuestionIndex === index ? "active fw-bold" : ""

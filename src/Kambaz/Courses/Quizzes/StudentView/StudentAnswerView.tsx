@@ -1,6 +1,4 @@
-import React from "react";
 import { Answers, Questions } from "../interface";
-import { formatTime } from "../../../util";
 import { Link } from "react-router-dom";
 import AnswerHistory from "./AnswerHistory";
 
@@ -39,7 +37,7 @@ export default function StudentAnswerView({
                   Attempt {answers.length - index}
                 </Link>
               </td>
-              <td>{formatTime(answer.time_used)}</td>
+              <td>{answer.time_used}</td>
               <td>{`${answer.score} out of ${answer.total}`}</td>
             </tr>
           ))}

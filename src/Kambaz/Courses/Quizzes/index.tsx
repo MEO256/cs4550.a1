@@ -7,14 +7,13 @@ import { useState, useEffect } from "react";
 import { setQuizzes } from "./reducer";
 import * as client from "./client";
 import QuizContextMenu from "./QuizContextMenu";
-import { Answers } from "./interface";
 
 export default function Quizzes() {
   const { cid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
   const dispatch = useDispatch();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [quizData, setQuizData] = useState<{
+  const [quizData] = useState<{
     [key: string]: {
       questionCount: number;
       score?: number | null;
@@ -25,124 +24,20 @@ export default function Quizzes() {
   const { currentUser } = useSelector((state: any) => state.accountReducer); 
   const fetchQuizzes = async () => {
     const quizzes = await client.findQuizzesForCourse(cid as string);
-    const quizData: {
-      [key: string]: {
-        questionCount: number;
-        score?: number | null;
-        total?: number | null;
-      };
-    } = {};
-
-    if (currentUser.role === "FACULTY") {
-      for (let quiz of quizzes) {
-        const questionSet = await client.getQuestionsByQuiz(quiz._id);
-        quizData[quiz._id] = {
-          questionCount:
-            questionSet && questionSet.questions
-              ? questionSet.questions.length
-              : -1,
-        };
-      }
-      dispatch(setQuizzes(quizzes));
-    } else if (currentUser.role === "STUDENT") {
-      const publishedQuizzes = quizzes.filter((q: any) => q.published);
-
-      for (let quiz of publishedQuizzes) {
-        const questionSet = await client.getQuestionsByQuiz(quiz._id);
-        const questionCount =
-          questionSet && questionSet.questions
-            ? questionSet.questions.length
-            : -1;
-
-        let score = null;
-        let total = null;
-
-        if (questionCount !== -1) {
-          const result = await getLatestAnswerScoreAndTotal(quiz._id, currentUser._id);
-          if (result) {
-            score = result.score;
-            total = result.total;
-          } else {
-            score = -1;
-            total = -1;
-          }
-        }
-
-        quizData[quiz._id] = {
-          questionCount,
-          score,
-          total,
-        };
-
-        dispatch(setQuizzes(publishedQuizzes));
-      }
-    }
-
-    setQuizData(quizData);
-  };
-
-  const getLatestAnswerScoreAndTotal = async (qid: string, userId: string) => {
-    if (!qid || !userId) {
-      console.error("Quiz ID or User ID is undefined");
-      return null;
-    }
-
-    try {
-      const answers = await client.getAnswersByUser(qid, userId);
-
-      if (answers && answers.length > 0) {
-        answers.sort(
-          (a: Answers, b: Answers) =>
-            +new Date(b.submit_time) - +new Date(a.submit_time)
-        );
-
-        const newestAnswer = answers[0];
-        const score = newestAnswer.score;
-        const total = newestAnswer.total;
-
-        return { score, total };
-      } else {
-        console.log("No answers found for this quiz.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching answers:", error);
-      return null;
-    }
+    console.log("Quizzes fetched:", quizzes);
+    dispatch(setQuizzes(quizzes));
   };
 
   const handleToggle = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  const getAvailability = (quiz: any) => {
-    const availableDate = new Date(
-      quiz.availableDate = quiz.availableDate
-    );
-    const availableUntilDate = new Date(
-      quiz.availableUntilDate = quiz.availableUntilDate
-    );
-    const currentDate = new Date();
-
-    if (currentDate > availableUntilDate) {
-      return "Closed";
-    } else if (
-      currentDate >= availableDate &&
-      currentDate <= availableUntilDate
-    ) {
-      return "Available";
-    } else if (currentDate < availableDate) {
-      return `Not available until ${quiz.availableDate}`;
-    } else {
-      return "Closed";
-    }
-  };
 
   useEffect(() => {
     fetchQuizzes();
   }, [currentUser.role]);
   
-  if (Object.keys(quizData).length < 1 && quizzes.length !== 0)
+  if (quizzes.length == 0)
     return <div>Loading...</div>;
   return (
     <div id="wd-quizzes">
@@ -164,7 +59,6 @@ export default function Quizzes() {
             style={{ borderLeft: "4px solid green" }}
           >
             {quizzes
-              .filter((q: any) => q.course === cid)
               .map((q: any) => (
                 <li
                   className="wd-quiz-item list-group-item d-flex align-items-center p-3 ps-1"
@@ -173,13 +67,13 @@ export default function Quizzes() {
                   <RxRocket className="m-4 fs-5 text-success" />
                   <div>
                     <Link
-                      to={`/Kanbas/Courses/${cid}/Quizzes/${q._id}`}
+                      to={`/Kambaz/Courses/${cid}/Quizzes/${q._id}`}
                       className="wd-quiz-link fs-5 fw-bold text-decoration-none text-dark"
                     >
                       {q.title}
                     </Link>
                     <p className="mb-0 text-muted fs-6">
-                      <b>{getAvailability(q)}</b> |{" "}
+                      <b>{}</b> |{" "}
                       {q.dueDate === "" ? (
                         <b>No Due Date</b>
                       ) : (

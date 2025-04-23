@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import {
-  Answer,
   Answers,
   Question,
   Questions,
@@ -9,17 +8,17 @@ import {
   ShowAnswerType,
 } from "../interface";
 import * as client from "../client";
-import { useAuth } from "../../../Authentication/AuthProvider";
 import AnswerHistory from "./AnswerHistory";
 import { Link } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 export default function ViewAttempt() {
   const [questions, setQuestions] = useState<Questions>();
   const [answers, setAnswers] = useState<Answers[]>();
   const [quiz, setQuiz] = useState<Quiz>();
-  const { cid, qid, aid } = useParams();
-  const auth = useAuth();
+  const { qid, aid } = useParams();
+  const { currentUser } = useSelector((state: any) => state.accountReducer); 
 
   const fetchQuiz = async () => {
     const data = qid ? await client.getQuizById(qid) : {};
@@ -31,7 +30,7 @@ export default function ViewAttempt() {
   };
 
   const fetchAnswers = async () => {
-    const answers = qid ? await client.getAnswersByUser(qid, auth.token) : [];
+    const answers = qid ? await client.getAnswersByUser(qid, currentUser._id) : [];
     if (answers) {
       answers.sort(
         (a: Answers, b: Answers) =>

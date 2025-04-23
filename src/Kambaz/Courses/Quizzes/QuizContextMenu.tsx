@@ -1,6 +1,4 @@
-// QuizContextMenu.tsx
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { deleteQuiz, togglePublishQuiz } from "./reducer";
@@ -60,7 +58,7 @@ const QuizContextMenu = ({ quizId }: QuizContextMenuProps) => {
             <ul className="dropdown-menu">
               <li>
                 <Link
-                  to={`/Kanbas/Courses/${cid}/Quizzes/${quizId}/edit`}
+                  to={`/Kambaz/Courses/${cid}/Quizzes/${quizId}/edit`}
                   className="text-decoration-none dropdown-item"
                 >
                   <FaEdit /> Edit

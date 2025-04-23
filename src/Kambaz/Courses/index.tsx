@@ -11,7 +11,10 @@ import { useSelector } from "react-redux";
 import * as courseClient from "./client";
 import * as enrollmentsClient from "../client";
 import Quizzes from "./Quizzes";
-import QuizDetails from "./Quizzes/Quizdetails";
+import QuizDetails from "./Quizzes/QuizDetails";
+import QuizStudent from "./Quizzes/StudentView";
+import Editor from "./Quizzes/Editor";
+import QuizPreview from "./Quizzes/QuizPreview";
 
 export default function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
@@ -20,6 +23,7 @@ export default function Courses({ courses }: { courses: any[] }) {
   const [users, setUsers] = useState<any[]>([]);
   const course = courses.find((course) => course._id === cid);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(true);
+  
 
   const isUserEnrolled = async (courseId: any) => {
     if (currentUser?.role === "ADMIN") {
@@ -69,7 +73,12 @@ export default function Courses({ courses }: { courses: any[] }) {
                 <Route path="Modules" element={<Modules />} />
                 <Route path="Assignments" element={<Assignments />} />
                 <Route path="Quizzes" element={<Quizzes />} />
-                <Route path="Quizzes/:qid" element={<QuizDetails />} />
+                <Route
+                  path="Quizzes/:qid"
+                  element={currentUser.role === "FACULTY" ? <QuizDetails /> : <QuizStudent />}
+                />
+                <Route path="Quizzes/:qid/edit" element={<Editor />} />
+                <Route path="Quizzes/:qid/preview" element={<QuizPreview />} />
                 <Route path="Assignments/:aid" element={<AssignmentEditor />} />
                 <Route path="People" element={<PeopleTable users={users} />} />
                 <Route path="People/:uid" element={<PeopleTable users={users} />} />

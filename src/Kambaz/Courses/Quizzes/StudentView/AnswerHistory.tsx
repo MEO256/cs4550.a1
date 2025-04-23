@@ -1,6 +1,4 @@
-import React from "react";
-import { Answers, Question, Questions } from "../interface";
-import { formatDate, formatTime } from "../../../util";
+import { Answers, Question } from "../interface";
 import AnswerByType from "./AnswerByType";
 
 export default function AnswerHistory({
@@ -28,9 +26,9 @@ export default function AnswerHistory({
           Score for this quiz: <span className="fw-bold">{answer.score}</span>{" "}
           out of {answer.total}
         </div>
-        <div>Submitted {formatDate(answer.submit_time)}</div>
+        <div>Submitted {answer.submit_time}</div>
         <div className="mb-3">
-          This attempt took {formatTime(answer.time_used)}.
+          This attempt took {answer.time_used}.
         </div>
       </div>
       <div
